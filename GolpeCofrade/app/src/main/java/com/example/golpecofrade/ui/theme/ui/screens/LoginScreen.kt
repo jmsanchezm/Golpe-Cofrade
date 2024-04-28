@@ -1,5 +1,5 @@
 
-package com.example.golpecofrade.ui.theme.ui
+package com.example.golpecofrade.ui.theme.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,61 +17,82 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.golpecofrade.R
+import com.example.golpecofrade.ui.theme.ui.viewmodels.LoginViewModel
+import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
-@Preview (showBackground = true, showSystemUi = true)
 @Composable
-fun LoginScreen(){
+fun LoginScreen(viewModel: LoginViewModel){
     Box(
         Modifier
             .fillMaxSize()) {
-        Login(Modifier.align(Alignment.Center))
+        Login(Modifier.align(Alignment.Center), viewModel)
     }
 
 }
 @ExperimentalMaterial3Api
 @Composable
-fun Login(modifier: Modifier){
-    BackgroundImage()
-    Column (modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally){
-        Spacer(modifier = Modifier.padding(50.dp))
-        TitleName()
-        Spacer(modifier = Modifier.padding(20.dp))
-        UsernameField()
-        Spacer(modifier = Modifier.padding(6.dp))
-        PasswordField()
-        Spacer(modifier = Modifier.padding(9.dp))
-        ForgotPassword()
-        Spacer(modifier = Modifier.padding(45.dp))
-        LoginButton()
-        Spacer(modifier = Modifier.padding(30.dp))
-        RegisterUser()
+private fun Login(modifier: Modifier,viewModel:LoginViewModel){
 
+    val username : String by viewModel.username.observeAsState(initial = "")
+    val password : String by viewModel.password.observeAsState(initial = "")
+    val buttonEnabled:Boolean by viewModel.buttonEnabled.observeAsState(initial = false)
+
+    val isLoading: Boolean by viewModel.isloading.observeAsState(initial = false)
+
+    val coroutineScope = rememberCoroutineScope()
+
+    if(isLoading){
+        Box( Modifier.fillMaxSize()) {
+            CircularProgressIndicator(Modifier.align(Alignment.Center))
+        }
+    }else{
+        BackgroundImage()
+        Column (modifier.padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally){
+            Spacer(modifier = Modifier.padding(40.dp))
+            TitleName()
+            Spacer(modifier = Modifier.padding(15.dp))
+            UsernameField(username){viewModel.onLoginChanged(it,password)}
+            Spacer(modifier = Modifier.padding(6.dp))
+            PasswordField(password){viewModel.onLoginChanged(username,it)}
+            Spacer(modifier = Modifier.padding(9.dp))
+            ForgotPassword()
+            Spacer(modifier = Modifier.padding(40.dp))
+            LoginButton(buttonEnabled){
+                coroutineScope.launch {
+                    viewModel.onLoginSelected()
+                }
+            }
+            Spacer(modifier = Modifier.padding(25.dp))
+            RegisterUser()
+        }
     }
+
 
 }
 
 @Composable
-fun BackgroundImage(){
+private fun BackgroundImage(){
     Image(painter = painterResource(id = R.drawable.fondo),
         contentDescription = "background",
         contentScale = ContentScale.Crop,
@@ -79,7 +100,7 @@ fun BackgroundImage(){
 }
 
 @Composable
-fun TitleName(){
+private fun TitleName(){
     Spacer(modifier = Modifier.height(12.dp))
     Text(text = "Bienvenido a ",
         style = TextStyle(
@@ -88,7 +109,7 @@ fun TitleName(){
     )
     Text(text = "Golpe Cofrade",
         style = TextStyle(
-            fontSize = 50.sp,
+            fontSize = 40.sp,
             color = Color(0xFF3B0069),
             fontWeight = FontWeight.Black)
     )
@@ -102,7 +123,8 @@ fun TitleName(){
 
 @ExperimentalMaterial3Api
 @Composable
-fun UsernameField(){
+private fun UsernameField(username: String, onTextFieldChanged:(String) -> Unit){
+
     Column(modifier = Modifier) {
         Row (modifier = Modifier){
             Spacer(modifier = Modifier.width(7.dp))
@@ -112,7 +134,7 @@ fun UsernameField(){
         }
 
         Spacer(modifier = Modifier.padding(5.dp))
-        TextField(value = "", onValueChange = {},
+        TextField(value = username, onValueChange = {onTextFieldChanged(it)},
             Modifier.fillMaxWidth(),
             placeholder = {Text(text = "Introduzca su nombre de usuario" ,
                 color = Color(0xFF4E3463),
@@ -131,7 +153,7 @@ fun UsernameField(){
 }
 @ExperimentalMaterial3Api
 @Composable
-fun PasswordField(){
+private fun PasswordField(password:String,onTextFieldChanged:(String) -> Unit){
 
     Column {
         Row (modifier = Modifier){
@@ -141,7 +163,7 @@ fun PasswordField(){
                 color = Color(0xFF3B0069))
         }
         Spacer(modifier = Modifier.padding(5.dp))
-        TextField(value = "", onValueChange = {},
+        TextField(value = password, onValueChange = {onTextFieldChanged(it)},
             Modifier.fillMaxWidth(),
             placeholder = {Text(text = "Introduzca su contraseña" ,
                 fontSize = 15.sp,
@@ -161,7 +183,7 @@ fun PasswordField(){
 }
 
 @Composable
-fun ForgotPassword(){
+private fun ForgotPassword(){
     Text(text = "¿Ha olvidado la contraseña?",
         modifier = Modifier.clickable {  },
         fontSize = 12.sp,
@@ -171,22 +193,22 @@ fun ForgotPassword(){
 }
 
 @Composable
-fun LoginButton(){
-    Button(onClick = { },
+private fun LoginButton(buttonEnabled: Boolean, onLoginSelected: () -> Unit) {
+    Button(onClick = { onLoginSelected() },
         modifier = Modifier.height(40.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF3B0069),
             disabledContainerColor = Color(0xFF887299),
             contentColor = Color.White,
             disabledContentColor = Color.White
-        )
+        ), enabled = buttonEnabled
     ) {
         Text(text = "Iniciar sesión")
     }
 }
 
 @Composable
-fun RegisterUser(){
+private fun RegisterUser(){
     Row (modifier = Modifier.clickable {  }){
         Text(text = "¿No tienes cuenta?",
             modifier = Modifier.clickable {  },
