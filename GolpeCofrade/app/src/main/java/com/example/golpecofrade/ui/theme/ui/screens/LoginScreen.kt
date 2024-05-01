@@ -36,23 +36,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.golpecofrade.R
+import com.example.golpecofrade.ui.theme.ui.navigation.AppScreens
 import com.example.golpecofrade.ui.theme.ui.viewmodels.LoginViewModel
 import kotlinx.coroutines.launch
 
 @ExperimentalMaterial3Api
 @Composable
-fun LoginScreen(viewModel: LoginViewModel){
+fun LoginScreen(viewModel: LoginViewModel,navController: NavController){
     Box(
         Modifier
             .fillMaxSize()) {
-        Login(Modifier.align(Alignment.Center), viewModel)
+        Login(Modifier.align(Alignment.Center), viewModel,navController)
     }
 
 }
+
+/**
+ * Función que mostrará todos los componentes de la pantalla
+ */
 @ExperimentalMaterial3Api
 @Composable
-private fun Login(modifier: Modifier,viewModel:LoginViewModel){
+private fun Login(modifier: Modifier,viewModel:LoginViewModel,navController:NavController){
 
     val username : String by viewModel.username.observeAsState(initial = "")
     val password : String by viewModel.password.observeAsState(initial = "")
@@ -84,21 +90,17 @@ private fun Login(modifier: Modifier,viewModel:LoginViewModel){
                 }
             }
             Spacer(modifier = Modifier.padding(25.dp))
-            RegisterUser()
+            RegisterUser(navController = navController)
         }
     }
 
 
 }
 
-@Composable
-private fun BackgroundImage(){
-    Image(painter = painterResource(id = R.drawable.fondo),
-        contentDescription = "background",
-        contentScale = ContentScale.Crop,
-        modifier = Modifier.fillMaxSize())
-}
 
+/**
+ * Función composable que muestra los títulos de la pantalla
+ */
 @Composable
 private fun TitleName(){
     Spacer(modifier = Modifier.height(12.dp))
@@ -121,6 +123,9 @@ private fun TitleName(){
     )
 }
 
+/**
+ * Función que muestra el apartado field del nombre de usuario
+ */
 @ExperimentalMaterial3Api
 @Composable
 private fun UsernameField(username: String, onTextFieldChanged:(String) -> Unit){
@@ -148,9 +153,11 @@ private fun UsernameField(username: String, onTextFieldChanged:(String) -> Unit)
             shape = RoundedCornerShape(10.dp)
         )
     }
-
-
 }
+
+/**
+ * Función que muestra el apartado field de la contraseña
+ */
 @ExperimentalMaterial3Api
 @Composable
 private fun PasswordField(password:String,onTextFieldChanged:(String) -> Unit){
@@ -182,6 +189,9 @@ private fun PasswordField(password:String,onTextFieldChanged:(String) -> Unit){
 
 }
 
+/**
+ * Función que navega a la pantalla de recuperación o cambio de la contraseña
+ */
 @Composable
 private fun ForgotPassword(){
     Text(text = "¿Ha olvidado la contraseña?",
@@ -192,6 +202,9 @@ private fun ForgotPassword(){
     )
 }
 
+/**
+ * Función que muestra el boton para iniciar sesión
+ */
 @Composable
 private fun LoginButton(buttonEnabled: Boolean, onLoginSelected: () -> Unit) {
     Button(onClick = { onLoginSelected() },
@@ -207,11 +220,15 @@ private fun LoginButton(buttonEnabled: Boolean, onLoginSelected: () -> Unit) {
     }
 }
 
+/**
+ * Función que muestra el apartado de creación de usuario
+ */
 @Composable
-private fun RegisterUser(){
-    Row (modifier = Modifier.clickable {  }){
+private fun RegisterUser(navController: NavController){
+    Row (modifier = Modifier.clickable {
+        navController.navigate(route = AppScreens.RegisterScreeen1.route)
+    }){
         Text(text = "¿No tienes cuenta?",
-            modifier = Modifier.clickable {  },
             fontSize = 12.sp,
             color = Color(0xFF3B0069)
         )

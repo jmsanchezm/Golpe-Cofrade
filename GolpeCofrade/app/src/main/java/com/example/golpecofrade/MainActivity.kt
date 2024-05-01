@@ -12,16 +12,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.golpecofrade.ui.theme.GolpeCofradeTheme
+import com.example.golpecofrade.ui.theme.ui.navigation.AppNavigation
 import com.example.golpecofrade.ui.theme.ui.screens.LoginScreen
+import com.example.golpecofrade.ui.theme.ui.screens.RegisterScreen2
 import com.example.golpecofrade.ui.theme.ui.viewmodels.LoginViewModel
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             GolpeCofradeTheme {
-                LoginScreen(viewModel = LoginViewModel())
+                AppNavigation()
             }
         }
     }

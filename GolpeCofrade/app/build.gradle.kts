@@ -59,6 +59,7 @@ dependencies {
     testImplementation(libs.junit)
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.6")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
